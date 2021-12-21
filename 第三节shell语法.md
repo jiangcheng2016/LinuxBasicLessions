@@ -483,7 +483,7 @@ echo `expr $a \| $b` #输出3
 
 ```read```命令用于从标准输入中读取单行数据。当读到文件结束符时，```exit code```为1，否则为0。
 
-###### 参数说明
+##### 参数说明
 
 * ```-p```：后面可以接提示信息
 * ```-t```：后面跟秒数，定义输入字符的等待时间，超过等待时间后会自动忽略此命令，但```-t```后面的命令继续执行
@@ -503,3 +503,324 @@ acs@740d1bdabef2:~$
 ```
 
 ![image-20211220221324454](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211220221324454.png)
+
+#### 8.```echo```命令
+
+```echo```用于输出字符串。命令格式：
+
+```shell
+echo string
+```
+
+##### 显示普通字符串
+
+```shell
+echo "Hello jtx"
+echo Hello jtx	#可以直接输出想表达的字符串
+```
+
+##### 显示转义字符
+
+ ```shell
+echo "\"Hello jtx\""	# 转义双引号
+echo \"Hello jtx\"	#省略外层双引号
+
+#示例
+acs@740d1bdabef2:~$ echo "\"Hello jtx\""
+"Hello jtx"
+acs@740d1bdabef2:~$ echo \"Hello jtx\"
+"Hello jtx"
+
+ ```
+
+##### 显示变量
+
+```shell
+name=jtx
+echo "wo shi $name" #输出 wo shi jtx
+
+#示例
+acs@740d1bdabef2:~$ name=jtx
+acs@740d1bdabef2:~$ echo "wo shi $name"
+wo shi jtx	#输出结果
+```
+
+##### 显示换行
+
+```shell
+echo -e "Hi\n"	# -e 开启转义
+echo "jwjtx"
+
+#示例
+acs@740d1bdabef2:~$ echo -e "Hi \n jwjtx" 
+Hi              #输出，换行                                                        
+ jwjtx                                                                                  
+acs@740d1bdabef2:~$ echo "Hi \n jwjtx"      
+Hi \n jwjtx           #输出，不换行       
+```
+
+##### 显示不换行
+
+```shell
+echo -e "Hi \c"	# -e 开启转义 \c 不换行
+echo "jwjtx"
+
+#示例
+acs@740d1bdabef2:~$ echo -e "Hi \c" 
+Hi acs@740d1bdabef2:~$ 	#输出 Hi 后，没有换行
+```
+
+##### 显示结果定向至文件
+
+```shell
+echo "Hello World" > out.txt 	#将内容输出到out.txt中
+```
+
+##### 原样输出字符串，不进行转义或取变量(用单引号)
+
+```shell
+name=jtx
+echo '$name\"'
+
+#输出结果
+acs@740d1bdabef2:~$ name=jtx
+acs@740d1bdabef2:~$ echo '$name\"'
+$name\"				#输出结果
+```
+
+##### 显示命令的执行结果
+
+```shell
+echo `date`
+
+#输出结果
+acs@740d1bdabef2:~$ echo `date`
+Tue Dec 21 16:02:24 CST 2021
+
+```
+
+#### 9.```printf```命令
+
+```printf```命令用于格式化输出，类似于```C++```的```printf```函数。
+
+默认不会在字符串末尾添加换行符。
+
+命令格式：
+
+```shell
+printf format-string [arguments...]
+```
+
+##### 用法示例
+
+脚本内容：
+
+```shell
+printf "%10d.\n" 123	# 占10位，右对齐
+printf "%-10.2f.\n" 566.545532	#占10位，保留2位小数，左对齐
+printf "my name is %s\n" "jtx"	#格式化输出字符串
+printf "%d * %d = %d\n" 2 3 `expr 2 \* 3`	#表达式的值作为参数
+
+#输出样例
+       123.
+566.55    . 
+my name is jtx 
+2 \* 3 = 6
+
+```
+
+![image-20211221202343082](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211221202343082.png)
+
+#### 10.```test```命令与判断符号```[]```
+
+##### 逻辑运算符```&&```和```||```
+
+* ```&&```表示与，```||```表示或
+
+* 二者具有短路原则：
+
+  ```expr1 && expr2```：当```expr1```为假时，直接忽略```expr2```
+
+  ```expr1 || expr2```：当```expr1```为真时，直接忽略```expr2```
+
+* 表达式的```exit code```为0，表示真；为非零，表示假。(**与我们平常所见相反**)
+
+##### ```test```命令
+
+在命令行中输入```man test```，可以查看```test```命令的用法。
+
+```test```命令用于判断文件类型，以及对变量做比较。
+
+```test```命令用```exit code```返回结果，而不是使用```stdout```。0表示真，非0表示假。
+
+例如：
+
+```shell
+test 2 -lt 3	# 2<3，为真，返回值为0
+echo $?			#输出上个命令的返回值，输出0
+
+acs@740d1bdabef2:~$ test 2 -lt 3
+acs@740d1bdabef2:~$ echo $?
+0
+```
+
+```shell
+acs@740d1bdabef2:~$ ls
+EOF  homework  main.cpp  test.sh  test4.sh  test5.sh  test6.sh  test8.sh  test_zs.sh  testbl.sh
+acs@740d1bdabef2:~$ test -e test.sh && echo "exist" || echo "not exist"	#判断test.sh是否存在，存在输出"exist", 不存在输出"not exist"
+exist
+acs@740d1bdabef2:~$ test -e test1.sh && echo "exist" || echo "not exist" #同理判断test1.sh是否存在
+not exist
+```
+
+##### 文件类型判断
+
+命令格式：
+
+```shell
+test -e filename	#判断文件是否存在
+```
+
+相关参数：
+
+* ```-e```：代表文件是否存在
+* ```-f```：判断是否为文件
+* ```-d```：判断是否为目录
+
+##### 文件权限判断
+
+命令格式：
+
+```shell
+test -r filename	#判断文件是否可读
+```
+
+相关参数：
+
+* ```-r```:文件是否可读
+* ```-w```：文件是否可写
+* ```-x```：文件是否可执行
+* ```-s```：是否为非空文件
+
+##### 整数间的比较
+
+命令格式：
+
+```shell
+test $a -eq $b	# a 是否等于 b
+```
+
+相关参数：
+
+* ```-eq```：两端是否相等
+* ```-ne```：两端是否不相等
+* ```-gt```：左边是否大于右边
+* ```-lt```：左边是否小于右边
+* ```-ge```：左边是否大于等于右边
+* ```-le```：左边是否小于等于右边
+
+##### 字符串比较
+
+| 测试参数                | 代表意义                                                    |
+| ----------------------- | ----------------------------------------------------------- |
+| ```test -z string```    | 判断string是否为空，如果为空，则返回```true```              |
+| ```test -n string```    | 判断string是否非空，如果非空，则返回```true```(-n 可以省略) |
+| ```test str1 == str2``` | 判断```str1```是否等于```str2```                            |
+| ```test str1 != str2``` | 判断```str1```是否不等于```str2```                          |
+
+##### 多重条件判定
+
+命令格式：
+
+```shell
+test -r filename -a -x filename
+```
+
+相关参数：
+
+* ```-a```：两条件是否同时成立
+* ```-o```：两条件是否至少成立一个
+* ```!```：取反。
+
+##### 判断符号```[]```
+
+```[]```和```test```用法几乎一模一样，更常用于```if```语句中。另外```[[]]```是```[]```的加强版，支持的特性更多。
+
+例如：
+
+```shell
+[ 2 -lt 3]	#2<3,为真，返回值为0
+echo $?	#输出上个命令的返回值，0
+
+#样例
+acs@740d1bdabef2:~$ [ 2 -lt 3 ]
+acs@740d1bdabef2:~$ echo $?
+0
+```
+
+```shell
+acs@740d1bdabef2:~$ ls
+EOF  homework  main.cpp  test.sh  test4.sh  test5.sh  test6.sh  test8.sh  test_zs.sh  testbl.sh
+acs@740d1bdabef2:~$ [ -e test.sh ] && echo "exist" || echo "not exist"
+exist
+acs@740d1bdabef2:~$ [ -e test1.sh ] && echo "exist" || echo "not exist"
+not exist
+```
+
+注意：
+
+* ```[]``` 内的每一项都要用空格隔开
+* 中括号内的变量，最好用双引号括起来
+* 中括号内的常数，最好用单或双引号括起来
+
+例如：
+
+```shell
+name="hi jtx"
+[ $name == "hi jtx" ]	#错误，等价于[ hi jtx == "hi jtx" ]
+[ "$name" == "hi jtx" ] #正确
+
+#示例
+acs@740d1bdabef2:~$ name="hi jtx"	
+acs@740d1bdabef2:~$ [ $name == "hi jtx" ]	#错误，参数太多
+-bash: [: too many arguments
+acs@740d1bdabef2:~$ [ "$name" == "hi jtx" ]	#正确，0为真
+acs@740d1bdabef2:~$ echo $?
+0
+```
+
+![image-20211221214227847](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211221214227847.png)
+
+#### 11.判断语句
+
+待更新....
+
+
+
+#### 12.循环语句
+
+待更新....
+
+
+
+#### 13.函数
+
+待更新...
+
+
+
+#### 14.```exit```命令
+
+待更新....
+
+
+
+#### 15.文件重定向
+
+待更新...
+
+
+
+#### 16.引入外部脚本
+
+待更新...
