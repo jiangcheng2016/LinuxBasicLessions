@@ -793,7 +793,189 @@ acs@740d1bdabef2:~$ echo $?
 
 #### 11.判断语句
 
-待更新....
+##### ```if...then```形式
+
+类似于我们经常使用的```if-else```语句。
+
+#### 单层```if```
+
+命令格式：
+
+```shell
+if condition
+then
+	语句1
+	语句2
+	...
+fi
+```
+
+示例：
+
+```shell
+a=3
+b=4
+
+if [ "$a" -lt "$b" ] && [ "$a" -gt 2 ]
+then
+	echo ${a}in range
+fi
+```
+
+输出结果：
+
+```shell
+3in range
+```
+
+![image-20211222205308984](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211222205308984.png)
+
+##### 单层```if-else```
+
+命令格式
+
+```shell
+if condition
+then 
+	语句1
+	语句2
+	...
+else
+	语句1
+	语句2
+	...
+fi
+```
+
+示例：
+
+```shell
+a=3
+b=4
+
+if ![ "$a" -lt "$b" ]
+then
+	echo ${a} not lt ${b}
+else
+	echo ${a} lt ${b}
+fi
+```
+
+输出结果：
+
+```shell
+3 lt 4
+```
+
+![image-20211222211502102](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211222211502102.png)
+
+
+
+##### 多层```if-else-elif-else```
+
+命令格式：
+
+```shell
+if condition
+then
+	语句1
+	语句2
+	...
+elif condition
+then
+	语句1
+	语句2
+	...
+elif condition
+then 
+	语句1
+	语句2
+	...
+fi
+```
+
+示例：
+
+```shell
+a=3
+
+if [ $a -eq 1 ]
+then
+	echo ${a} equals 1
+elif [ $a -eq 2 ]
+then
+	echo ${a} equals 2
+elif [ $a -eq 3 ]
+then 
+	echo ${a} equals 3
+else
+	echo others
+fi
+```
+
+输出结果
+
+```shell
+3 equals 3
+```
+
+![](G:\Personal\CSDN\Linux基础系统篇章\lesson3-1\if-elif-else.png)
+
+
+
+##### ```case...esac```形式
+
+类似于我们常用的```switch```语句。
+
+ 命令格式：
+
+```shell
+case $变量名称 in
+	值1)
+		语句1
+		语句2
+		...
+		;;	#类外于我们用的break语句
+	值2)
+		语句1
+		语句2
+		...
+		;;
+	*)	#类似于我们用的 default
+		语句1
+		语句2
+		...
+		;;
+esac
+```
+
+示例：
+
+```shell
+a=4
+
+case $a in
+	1)
+		echo ${a} equals 1
+		;;
+	2)
+		echo ${a} equals 2
+		;;
+	3)
+		echo ${a} equals 3
+		;;
+	*)
+		echo "others"
+esac
+```
+
+输出结果
+
+```shell
+others
+```
+
+![image-20211222213334693](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211222213334693.png)
 
 
 
