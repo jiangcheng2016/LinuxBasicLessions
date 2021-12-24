@@ -981,7 +981,204 @@ others
 
 #### 12.循环语句
 
-待更新....
+##### ```for...in...do...done```
+
+命令格式：
+
+```shell
+for var in var1 var2 var3
+do 
+	语句1
+	语句2
+	语句3
+	...
+done
+```
+
+示例1，输出 ```a 2 cc ```，每个元素一行：
+
+```shell
+for i in a 2 cc
+do 
+	echo $i
+done
+```
+
+![image-20211224203541573](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224203541573.png)
+
+
+
+示例2， 输出当前路径下的所有文件名，每个文件名一行：
+
+```shell
+for file in `ls`
+do 
+	echo $file
+done
+```
+
+![image-20211224203724023](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224203724023.png)
+
+示例3， 输出```1-10```
+
+```shell
+for i in $(seq 1 10)
+do 
+	echo $i
+done
+```
+
+![image-20211224203915366](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224203915366.png)
+
+
+
+示例4， 使用```{1..10}``` 或 ```{a..z}```
+
+```shell
+for i in {1..10}
+do 
+	echo $i
+done
+```
+
+![image-20211224204345707](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224204345707.png)
+
+
+
+##### ```for((...;...;...)) do...done```
+
+命令格式：
+
+```shell
+for((表达式; 条件; 表达式))
+do 
+	语句1
+	语句2
+	...
+done
+```
+
+示例：输出1-10，每个数占一行
+
+```shell
+for ((i = 1; i <= 10; i ++))
+do 
+	echo $i
+done
+```
+
+![image-20211224214222916](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224214222916.png)
+
+
+
+##### ```while...do...done```循环
+
+命令格式：
+
+```shell
+while condition
+do
+	语句1
+	语句2
+	...
+done
+```
+
+示例，文件结束符为```Ctrl+d```，输入文件结束符后```read```指令返回```false```。
+
+```shell
+while read name
+do 
+	echo $name
+done
+```
+
+![image-20211224214441219](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224214441219.png)
+
+##### ```until...do...done```循环
+
+当条件为真时结束。
+
+命令格式：
+
+```shell
+until condition
+do 
+	语句1
+	语句2
+	...
+done
+```
+
+示例，当用户输入```yes```或者```YES```时结束，否则一直等待读入。
+
+```shell
+until [ "${word}" == "yes" ] || [ "${word}" == "YES" ]
+do
+	read -p "input yes/YES to stop:" word
+done
+```
+
+![image-20211224215538344](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224215538344.png)
+
+##### ```break```命令
+
+跳出当前一层循环，```shell```里面的```break```不能跳出```case```语句。
+
+示例
+
+```shell
+while read name
+do
+	for ((i=1;i<=10;i++))
+	do
+		case $i in
+			8)
+				break
+				;;
+			*)
+				echo $i
+				;;
+		esac
+	done
+done
+```
+
+该示例每读入非```EOF```的字符串，会输出```1-7```。（因为在8的时候，break就跳出了循环)
+
+该程序可以输入```Ctrl+d```文件结束符来结束，也可以直接用```Ctrl+c```杀掉该进程。
+
+
+
+##### ```continue```命令
+
+跳出当前循环。
+
+示例：
+
+```shell
+#输出1-10中的奇数
+
+for ((i=1;i<=10;i++))
+do
+	if [ `expr $i % 2` -eq 0 ]
+	then
+		continue
+	fi
+		echo $i
+done
+```
+
+![image-20211224220834907](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211224220834907.png)
+
+##### 死循环的处理方式
+
+如果```AC Terminal```可以打开程序，则输入```Ctrl + c```即可。
+
+否则可以直接关闭进程：
+
+* 1.使用```top```命令找到进程的```PID```
+* 2.输入```kill -9 PID```即可关掉此进程
 
 
 
