@@ -1,4 +1,4 @@
-# 第三节 ```shell``` 语法
+# 第三节 ```Shell```常用语法
 
 #### 1.概论
 
@@ -1184,22 +1184,291 @@ done
 
 #### 13.函数
 
-待更新...
+```bash```中的函数跟平时使用的函数，但```return```的返回值与平时使用的函数可能不同，返回的是```exit code```，取值为```0-255```，```0```表示正常结束。
+
+如果想获取函数的输出结果，可以通过```echo```输出到```stdout```中，然后通过```$(function_name)```来获取```stdout```中的结果。
+
+函数的```return```值可以通过```$?```来获取。
+
+命令格式：
+
+```shell
+[function] func_name() {	# function关键字可以省略
+	语句1
+	语句2
+	...
+}
+```
+
+
+
+##### 不获取```return```值和```stdout```值
+
+示例
+
+```shell
+func() {
+	name=jtx
+	echo "hi, $name"
+}
+
+#调用func
+func
+```
+
+输出结果：
+
+![image-20211225151358979](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225151358979.png)
+
+##### 获取```return```值和```stdout```值
+
+不写```return```时，默认```return 0```。
+
+示例
+
+```shell
+func(){
+	name=jtx
+	echo "hi,$name"
+	
+	return 123
+}
+
+output=$(func)
+ret=$?
+
+echo "output = $output"
+echo "return = $ret"
+
+```
+
+![image-20211225153322561](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225153322561.png)
+
+
+
+#####  函数的输入参数
+
+在函数内，```$1```表示第一个输入参数，```$2```表示第二个输入参数，依次类推。
+
+函数内的```$0```仍然是文件名，而不是函数名。
+
+示例：
+
+```shell
+func() {	#递归计算 $1 + ($1 - 1) + ($2 - 2) + ... + 0 
+	flag=""
+	while [ "${flag}" != "y" ] && [ "${flag}" != "n"]
+	do
+		read -p "enter the func($1) ? please input y/n: " word
+	done
+	
+	if [ "${flag}" == 'n' ]
+	then
+		echo 0
+		return 0
+	fi
+	
+	if [ $1 -le 0 ]
+	then
+		echo 0
+		return 0
+	fi
+	
+	sum=$(func $(expr $1 - 1))
+	echo $(expr $sum + $1)
+	
+}
+
+echo $(func 10)
+```
+
+输出结果：55
+
+![image-20211225203744381](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225203744381.png)
+
+##### 函数内的局部变量
+
+可以在函数内定义局部变量，作用范围仅在当前函数内。
+
+可以在递归函数中定义局部变量。
+
+命令格式：
+
+```shell
+local 变量名=变量值
+```
+
+例如：
+
+```shell
+#! /bin/bash
+ 
+func() {
+     local name=jtx
+     echo $name
+}
+
+func
+echo $name
+
+#输出结果中，第一行的jtx为函数内输出，第二行空位函数外调用找不到此值
+```
+
+![image-20211225204215801](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225204215801.png)
+
+
 
 
 
 #### 14.```exit```命令
 
-待更新....
+```exit```命令用来退出当前```shell```进程，并返回一个退出状态；使用```$?```可以接收这个退出状态。
+
+```exit```命令可以接受一个整数值作为参数，代表退出状态。如果不指定，默认状态值是0。
+
+```exit```退出状态只能是一个介于```0~255```之间的整数，其中只有```0```表示成功，其他值都表示失败。
+
+
+
+示例：
+
+```shell
+#! /bin/bash
+
+if [ $# -ne 1 ] #如果传入参数个数等于1，则正常退出
+then
+    echo "exit normal"
+    exit 1
+else
+    echo "exit not normal"
+    exit 0
+fi
+
+```
+
+![image-20211225205831468](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225205831468.png)
 
 
 
 #### 15.文件重定向
 
-待更新...
+每个进程默认打开3个文件描述符：
+
+* ```stdin```标准输入，从命令行读取数据，文件描述符为0
+* ```stout```标准输出，向命令行输出数据，文件描述符为1
+* ```stderr```标准错误输出，向命令行输出数据，文件描述符为2
+
+可以用文件重定向将这三个文件重定向到其他文件中。
+
+<hr>
+
+##### 重定向命令表
+
+| 命令                     | 说明                                                |
+| ------------------------ | --------------------------------------------------- |
+| ```command  >  file```   | 将```stdout```重定向到```file```中                  |
+| ```command  <  file```   | 将```stdin```重定向到```file```中                   |
+| ```command  >>  file```  | 将```stdout```以追加方式重定向到```file```中        |
+| ```command  n>  file```  | 将文件描述符```n```重定向到```file```中             |
+| ```command  n>>  file``` | 将文件描述符```n```以追加的方式重定向到```file```中 |
+
+##### 输入和输出重定向
+
+```shell
+echo -e "Hi,\c" > out.txt #将stdout重定向到 out.txt中
+echo "hi,my name is jtx" >> out.txt	#将字符串追加到out.txt中
+
+read str < out.txt 	#从out.txt中读取字符串
+
+echo $str
+```
+
+![](G:\Personal\CSDN\Linux基础系统篇章\lesson3-1\redirection1.png)
+
+##### 同时重定向```stdin```和```stdout```
+
+```shell
+#! /bin/bash
+
+read a
+read b
+
+echo $(expr $a + $b)
+```
+
+```touch```一个```input.txt```，里面的内容为：
+
+```bash
+20 
+30
+```
+
+执行命令：
+
+```shell
+acs@740d1bdabef2:~/redirection$ ls
+input.txt  test.sh
+acs@740d1bdabef2:~/redirection$ cat input.txt #查看input.txt内容
+20
+30
+acs@740d1bdabef2:~/redirection$ ./test.sh < input.txt > output.txt	#input.txt内容作为输入，执行结果输出到output.txt中
+acs@740d1bdabef2:~/redirection$ cat output.txt 	#查看output.txt
+50
+```
 
 
+
+![image-20211225211844481](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225211844481.png)
 
 #### 16.引入外部脚本
 
-待更新...
+引入外部脚本类似我们```c/c++```中的```include```，类似```java```中的```import```，```bash```也可以引入其他文件中的代码。
+
+语法格式：
+
+```shell
+. filename	#一个点 空格 文件名
+
+source filename	#第二种方法
+```
+
+示例：
+
+```touch```第一个文件```file1.sh```，内容：
+
+```shell
+#! /bin/bash
+
+firstFile=firstName	#创建变量firstFile
+```
+
+```touch```第二个文件```file2.sh```，内容：
+
+```shell
+#! /bin/bash
+
+source file1.sh	# 或者 . file1.sh
+
+echo "this is firstFile: $name"	
+```
+
+![image-20211225212930347](C:\Users\86178\AppData\Roaming\Typora\typora-user-images\image-20211225212930347.png)
+
+
+
+#### ```Shell```常用语法完结
+
+到这里，关于```Linux```基础中篇幅最大的```Shell```常用语法就结束了。内容相对来说不算太多，也不算太少，用心即可学好。理论是一方面，最重要的还是实践，关于命令这个东西，我个人觉得不需要背，用的次数多了便记住了，对于这部分也是这样，我们通过学习理论知识，对整个知识框架有了了解，那么接下来就是把理论运用于实践当中，熟能生巧！
+
+
+
+
+
+
+
+
+
+
+
+
+
