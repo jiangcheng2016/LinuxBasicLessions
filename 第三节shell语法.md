@@ -1335,7 +1335,7 @@ echo $name
 ```shell
 #! /bin/bash
 
-if [ $# -ne 1 ] #如果传入参数个数等于1，则正常退出
+if [ $# -ne 1 ] #如果传入参数个数等于1，则正常退 出
 then
     echo "exit normal"
     exit 1
